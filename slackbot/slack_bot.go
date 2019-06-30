@@ -64,6 +64,7 @@ func handleMessage(ev *slack.MessageEvent) {
 func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEntity) {
 
 	// Using the entity key, we determine the appropriate response
+
 	switch entityKey {
 	case "greetings":
 		slackClient.PostMessage(ev.Channel, slack.MsgOptionText("Hi there!", false), slack.MsgOptionAsUser(true), slack.MsgOptionUser(ev.User))
@@ -71,18 +72,15 @@ func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEnt
 
 	case "wolfram_search_query":
 		res, err := wolframClient.GetSpokentAnswerQuery(entity.Value.(string), wolfram.Metric, 1000)
-		fmt.Printf("res: %v \n", res)
-		fmt.Printf("err: %v \n", err)
 
-		if err == nil {
+		if err == nil && res != "Wolfram Alpha did not understand your input" {
 			slackClient.PostMessage(ev.Channel, slack.MsgOptionText(res, false), slack.MsgOptionAsUser(true), slack.MsgOptionUser(ev.User))
 			return
 		}
 		
 		log.Printf("unable to get data from wolfram: %v", err)
-
-
-	default:
-		slackClient.PostMessage(ev.Channel, slack.MsgOptionText("I don't understand -\\__(0_0)__/-", false), slack.MsgOptionAsUser(true), slack.MsgOptionUser(ev.User))
 	}
+
+
+	slackClient.PostMessage(ev.Channel, slack.MsgOptionText("I don't understand -\\__(0_0)__/-", false), slack.MsgOptionAsUser(true), slack.MsgOptionUser(ev.User))
 }
