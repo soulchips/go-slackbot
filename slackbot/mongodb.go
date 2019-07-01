@@ -4,34 +4,38 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type status struct {
-	userID        string
-	name          string
-	lastStatus    string
-	lastUpdate    time.Time
-	dailyCheckins []checkin
+// Status of a user along with their checkin history
+type Status struct {
+	UserID        string    `bson:"userID"`
+	Name          string    `bson:"name"`
+	LastStatus    string    `bson:"last_status"`
+	LastUpdate    time.Time `bson:"last_update"`
+	DailyCheckins []Checkin `bson:"checkins"`
 }
 
-type checkin struct {
-	date           string
-	timeStamp      string
-	status         string
-	checkinMessage string
+// Checkin object. Database will track daily check-ins for each user
+type Checkin struct {
+	Date           string    `bson:"checkin_date"`
+	TimeStamp      time.Time `bson:"checkin_timestamp"`
+	Status         string    `bson:"status"`
+	CheckinMessage string    `bson:"message"`
 }
 
-func (toBeStored status) writeToDB(db string, collectionName string) bool {
+func (toBeStored Status) writeToDB(db string, collectionName string) (*mongo.InsertOneResult, error) {
 	collection := client.Database(db).Collection(collectionName)
 
 	insertResult, err := collection.InsertOne(context.TODO(), toBeStored)
 	if err != nil {
 		fmt.Println(err)
-		return false
+		return insertResult, err
 	}
 
-	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	return true
+	fmt.Println("Inserted a single document: ", insertResult)
+	return insertResult, nil
 }
 
 func readFromDB() {
