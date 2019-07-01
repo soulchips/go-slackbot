@@ -1,23 +1,39 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"time"
-
-	"gopkg.in/mgo.v2"
 )
 
-type Post struct {
-	Text      string    `json:"text" bson:"text"`
-	CreatedAt time.Time `json:"createdAt" bson:"created_at"`
+type status struct {
+	userID        string
+	name          string
+	lastStatus    string
+	lastUpdate    time.Time
+	dailyCheckins []checkin
 }
 
-var posts *mgo.Collection
+type checkin struct {
+	date           string
+	timeStamp      string
+	status         string
+	checkinMessage string
+}
 
+func (toBeStored status) writeToDB(db string, collectionName string) bool {
+	collection := client.Database(db).Collection(collectionName)
 
-func writeToDB() {
+	insertResult, err := collection.InsertOne(context.TODO(), toBeStored)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
 
+	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	return true
 }
 
 func readFromDB() {
-	
+
 }
