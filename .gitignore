@@ -1,2 +1,6 @@
+# Files
 keys
 .DS_Store
+
+# Generated Folders
+/slackbot/tmp

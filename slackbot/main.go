@@ -18,7 +18,7 @@ var (
 )
 
 func main() {
-	fmt.Println("starting connectin...")
+	fmt.Println("starting connection...")
 
 	rtm := slackClient.NewRTM()
 	go rtm.ManageConnection()

@@ -7,6 +7,10 @@ services:
       - '8080:8080'
     volumes:
       - './slackbot:/go/src/app'
+    environment:
+      SLACK_ACCESS_KEY: xoxb-668635567155-680038948976-2pZWAWWL8ys3GVc90nOnwMza
+      WIT_AI_ACCESS_KEY: XVBUNWEDBROCOT7HGCHNLLT3Z3IQN6DA
+      WOLFRAM_APP_ID: Y5EJEG-8VPX6VUEY8
     depends_on:
       - 'mongo'
   mongo:
