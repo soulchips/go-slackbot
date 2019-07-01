@@ -32,7 +32,7 @@ func main() {
 
 	fmt.Println("starting connections...")
 
-	// Connect to MongoDB
+	// Check if connected to MongoDB
 	if mongoError != nil {
 		log.Fatal(mongoError)
 	}
