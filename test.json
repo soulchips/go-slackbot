@@ -1,11 +1,13 @@
 {
   "id": "user.ID", 
   "name": "user.Profile.RealName",
+  "last_status": "OOO",
   "daily_checkins": [
     {
       "date": "some date",
-      "checkin_time": null,
-      "status": ["OOO", "SICK", "WFH", "IO"]
+      "checkin_timestamp": null,
+      "status": ["OOO", "SICK", "WFH", "IO"],
+      "checkin_message": "w.e the message was"
     }
   ]
 }
