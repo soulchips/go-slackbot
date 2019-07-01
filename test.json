@@ -1,0 +1,11 @@
+{
+  "id": "user.ID", 
+  "name": "user.Profile.RealName",
+  "daily_checkins": [
+    {
+      "date": "some date",
+      "checkin_time": null,
+      "status": ["OOO", "SICK", "WFH", "IO"]
+    }
+  ]
+}
