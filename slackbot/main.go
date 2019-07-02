@@ -17,12 +17,15 @@ import (
 )
 
 var (
-	slackClient        = slack.New(os.Getenv("SLACK_ACCESS_KEY"))
-	witClient          = wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
-	wolframClient      = &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
-	clientOptions      = options.Client().ApplyURI("mongodb://localhost:27017")
-	ctx, _             = context.WithTimeout(context.Background(), 10*time.Second)
-	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	mongoHost						= "localhost"
+	mongoPort						= "27017"
+	slackClient        	= slack.New(os.Getenv("SLACK_ACCESS_KEY"))
+	witClient          	= wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
+	wolframClient      	= &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
+	clientOptions      	= options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort)
+	ctx, _             	= context.WithTimeout(context.Background(), 10*time.Second)
+	client, mongoError 	= mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	slackBotIDString		string
 )
 
 func main() {
@@ -59,6 +62,7 @@ func main() {
 		case *slack.MessageEvent:
 			info := rtm.GetInfo()
 			prefix := fmt.Sprintf("<@%s> ", info.User.ID)
+			slackBotIDString = prefix
 
 			if ev.User != info.User.ID && strings.HasPrefix(ev.Text, prefix) {
 				handleMessage(ev)

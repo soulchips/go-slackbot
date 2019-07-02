@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	database   = "test_database"
-	collection = "test_statuses"
+	testDatabase   = "test_database"
+	testCollection = "test_statuses"
 )
 
 func TestMongoConnection(t *testing.T) {
@@ -37,7 +37,7 @@ func TestAddNewUser(t *testing.T) {
 	user.LastStatus = "WFH"
 
 	t.Run("Should be able write a new userStatus instance to the collection", func(t *testing.T) {
-		res, err := user.createNew(database, collection)
+		res, err := user.createNew(testDatabase, testCollection)
 		if err != nil {
 			t.Errorf("Unable to write to db, Error: %v\n", err)
 		}
@@ -52,7 +52,7 @@ func TestGetUserInfo(t *testing.T) {
 	userID := "TestID"
 
 	t.Run("Should be able to search for userinfo by ID and get the correct data", func(t *testing.T) {
-		result, err := getUserInfo(userID, database, collection)
+		result, err := getUserInfo(userID, testDatabase, testCollection)
 		if err != nil {
 			t.Errorf("Unable to read from db, Error: %v\n", err)
 		}
@@ -61,4 +61,26 @@ func TestGetUserInfo(t *testing.T) {
 			t.Errorf("Expecting to find Ash Ketchum but instead found: %v\n", result.Name)
 		}
 	})
+}
+
+func TestUpdateUserInfo(t *testing.T) {
+	t.Run("Should be able to update user's status", func(t *testing.T) {
+
+	})
+
+	t.Run("Should be able to update user's basic info", func(t *testing.T) {
+
+	})
+}
+
+func TestDatabaseCleanUp(t *testing.T) {
+	// clean up testing database and confirm empty
+	collectionResult := client.Database(testDatabase).Collection(testCollection)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := collectionResult.Drop(ctx)
+	if err != nil {
+		t.Errorf("Unable to drop collection, Error: %v\n", err)
+	}
 }
