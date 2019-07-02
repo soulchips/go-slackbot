@@ -11,26 +11,25 @@ import (
 )
 
 // UserStatus of a user along with their checkin history
-type UserStatus struct {
+type User struct {
 	UserID        string    `bson:"userID"`
 	Name          string    `bson:"name"`
 	LastStatus    string    `bson:"last_status"`
 	LastUpdate    time.Time `bson:"last_update"`
-	DailyCheckins []Checkin `bson:"checkins"`
+	CreatedAt			time.Time `bson:"created_at"`
 }
 
-// Checkin object. Database will track daily check-ins for each user
-type Checkin struct {
-	Date           string    `bson:"checkin_date"`
-	TimeStamp      time.Time `bson:"checkin_timestamp"`
-	Status         string    `bson:"status"`
-	CheckinMessage string    `bson:"message"`
+func newUser() *User{
+	user := new(User)
+	user.LastUpdate = time.Now().UTC()
+	user.CreatedAt = time.Now().UTC()
+
+	return user
 }
 
-// TODO: remove database and collection from args, set defaults and retrieve from .env
 
 // creates a new instance of a user's status record
-func (toBeStored UserStatus) createNew(database string, collection string) (*mongo.InsertOneResult, error) {
+func (toBeStored User) createNew(database string, collection string) (*mongo.InsertOneResult, error) {
 	collectionResult := client.Database(database).Collection(collection)
 	insertResult, err := collectionResult.InsertOne(context.Background(), toBeStored)
 
@@ -42,17 +41,18 @@ func (toBeStored UserStatus) createNew(database string, collection string) (*mon
 	return insertResult, nil
 }
 
-// Retrieve the mose recent data for the user
-func getUserStatus(userID string, database string, collection string) (status UserStatus, err error) {
+// Retrieves the most recent data for the user
+func getUserInfo(userID string, database string, collection string) (User, error) {
 	collectionResult := client.Database(database).Collection(collection)
 	filter := bson.D{primitive.E{Key: "userID", Value: userID}}
-	result := UserStatus{}
+	result := User{}
 
-	err = collectionResult.FindOne(context.Background(), filter).Decode(&result)
+	err := collectionResult.FindOne(context.Background(), filter).Decode(&result)
 
 	return result, err
 }
 
-func (toBeStored UserStatus) userCheckin(db string, collectionName string) {
+// Updates the user's status
+func (toBeStored User) userCheckin(db string, collectionName string) {
 
 }

@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	// Define database and collection for testing
 	database   = "test_database"
 	collection = "test_statuses"
 )
@@ -32,20 +31,10 @@ func TestMongoConnection(t *testing.T) {
 }
 
 func TestAddNewUser(t *testing.T) {
-	user := UserStatus{
-		"TestID",
-		"Ash Ketchum",
-		"WFH",
-		time.Now().UTC(),
-		[]Checkin{
-			Checkin{
-				time.Now().Format("Jan-02-2006"),
-				time.Now().UTC(),
-				"WFH",
-				"Hi I'm working from home today",
-			},
-		},
-	}
+	user := newUser()
+	user.UserID = "TestID"
+	user.Name = "Ash Ketchum"
+	user.LastStatus = "WFH"
 
 	t.Run("Should be able write a new userStatus instance to the collection", func(t *testing.T) {
 		res, err := user.createNew(database, collection)
@@ -63,7 +52,7 @@ func TestGetUserInfo(t *testing.T) {
 	userID := "TestID"
 
 	t.Run("Should be able to search for userinfo by ID and get the correct data", func(t *testing.T) {
-		result, err := getUserStatus(userID, database, collection)
+		result, err := getUserInfo(userID, database, collection)
 		if err != nil {
 			t.Errorf("Unable to read from db, Error: %v\n", err)
 		}

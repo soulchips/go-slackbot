@@ -23,8 +23,6 @@ var (
 	clientOptions      = options.Client().ApplyURI("mongodb://localhost:27017")
 	ctx, _             = context.WithTimeout(context.Background(), 10*time.Second)
 	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	// client, mongoError 	= mongo.Connect(context.Background(), clientOptions)
-	// TODO: define mongo domain/ip, port, database and collection
 )
 
 func main() {
