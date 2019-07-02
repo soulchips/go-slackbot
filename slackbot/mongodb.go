@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Status of a user along with their checkin history
-type Status struct {
+// UserStatus of a user along with their checkin history
+type UserStatus struct {
 	UserID        string    `bson:"userID"`
 	Name          string    `bson:"name"`
 	LastStatus    string    `bson:"last_status"`
@@ -25,19 +27,32 @@ type Checkin struct {
 	CheckinMessage string    `bson:"message"`
 }
 
-func (toBeStored Status) writeToDB(db string, collectionName string) (*mongo.InsertOneResult, error) {
-	collection := client.Database(db).Collection(collectionName)
+// TODO: remove database and collection from args, set defaults and retrieve from .env
 
-	insertResult, err := collection.InsertOne(context.TODO(), toBeStored)
+// creates a new instance of a user's status record
+func (toBeStored UserStatus) createNew(database string, collection string) (*mongo.InsertOneResult, error) {
+	collectionResult := client.Database(database).Collection(collection)
+	insertResult, err := collectionResult.InsertOne(context.Background(), toBeStored)
+
 	if err != nil {
 		fmt.Println(err)
 		return insertResult, err
 	}
 
-	fmt.Println("Inserted a single document: ", insertResult)
 	return insertResult, nil
 }
 
-func readFromDB() {
+// Retrieve the mose recent data for the user
+func getUserStatus(userID string, database string, collection string) (status UserStatus, err error) {
+	collectionResult := client.Database(database).Collection(collection)
+	filter := bson.D{primitive.E{Key: "userID", Value: userID}}
+	result := UserStatus{}
+
+	err = collectionResult.FindOne(context.Background(), filter).Decode(&result)
+
+	return result, err
+}
+
+func (toBeStored UserStatus) userCheckin(db string, collectionName string) {
 
 }

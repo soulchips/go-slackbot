@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/Krognol/go-wolfram"
 	"github.com/christianrondeau/go-wit"
@@ -16,11 +17,13 @@ import (
 )
 
 var (
-	slackClient   			= slack.New(os.Getenv("SLACK_ACCESS_KEY"))
-	witClient     			= wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
-	wolframClient 			= &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
-	clientOptions 			= options.Client().ApplyURI("mongodb://localhost:27017")
-	client, mongoError 	= mongo.Connect(context.TODO(), clientOptions)
+	slackClient        = slack.New(os.Getenv("SLACK_ACCESS_KEY"))
+	witClient          = wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
+	wolframClient      = &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
+	clientOptions      = options.Client().ApplyURI("mongodb://localhost:27017")
+	ctx, _             = context.WithTimeout(context.Background(), 10*time.Second)
+	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	// client, mongoError 	= mongo.Connect(context.Background(), clientOptions)
 	// TODO: define mongo domain/ip, port, database and collection
 )
 
@@ -39,7 +42,7 @@ func main() {
 	}
 
 	// Check MongoDB connection
-	err = client.Ping(context.TODO(), nil)
+	err = client.Ping(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
