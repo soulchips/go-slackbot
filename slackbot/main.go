@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	mongoHost						= "localhost"
-	mongoPort						= "27017"
+	mongoHost						= os.Getenv("MONGO_HOST")
+	mongoPort						= os.Getenv("MONGO_PORT")
 	slackClient        	= slack.New(os.Getenv("SLACK_ACCESS_KEY"))
 	witClient          	= wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
 	wolframClient      	= &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
@@ -26,6 +26,8 @@ var (
 	ctx, _             	= context.WithTimeout(context.Background(), 10*time.Second)
 	client, mongoError 	= mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	slackBotIDString		string
+	slackDatabase				= os.Getenv("MONGO_DATABASE")
+	statusCollection		= "statuses"
 )
 
 func main() {

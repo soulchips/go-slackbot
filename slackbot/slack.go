@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -15,22 +14,32 @@ func sendMessage(msg string, channelID string) {
 	slackClient.PostMessage(channelID, slack.MsgOptionText(msg, false), slack.MsgOptionAsUser(true))
 }
 
-func userCheckIn(userID string, status string) {
+// Saves user checking data, creates a new user if user isnt found
+func userCheckIn(userID string, username string, status string, database string, collection string) bool {
 	// get userinfo from db
+	user, err := getUserInfo(userID, database, collection)
 
 	// if no info, create new user
+	if(err != nil || user.UserID == "") {
+		user = newUser()
+		user.UserID = userID
+		user.Name = username
+	}
 
-	// update user's status
+	user.LastStatus = status
 
-	// save status
+	updateResult, err := user.update(database, collection)
+
+	if(err != nil || updateResult.UpsertedID == nil) {
+		return false
+	}
+	return true
 }
 
 // Checks for message events directed to the slackbot
-
 func handleMessage(ev *slack.MessageEvent) {
-	fmt.Printf("Message received: %v\n", ev.Msg.Text)
-	fmt.Println()
- 
+
+	// remove slackbot id from msg string
 	msgText := strings.Replace(ev.Msg.Text, slackBotIDString, "", 1)
 
 	res, err := witClient.Message(msgText)
@@ -47,11 +56,6 @@ func handleMessage(ev *slack.MessageEvent) {
 
 	for entityKey, entityList := range res.Entities {
 		for _, entity := range entityList {
-			fmt.Printf("Entity: %v\n", entity)
-			fmt.Printf("EntityKey: %v\n", entityKey)
-			fmt.Printf("Confidence: %v\n", entity.Confidence)
-			fmt.Println()
-
 			if entity.Confidence > topEntity.Confidence && entity.Confidence > minimumConfidence {
 				topEntityKey = entityKey
 				topEntity = entity
@@ -59,13 +63,10 @@ func handleMessage(ev *slack.MessageEvent) {
 		}
 	}
 
-	fmt.Printf("Top topEntity: %v\n", topEntity)
-	fmt.Printf("Top topEntityKey: %v\n", topEntityKey)
-	fmt.Printf("User ID: %v\n", ev.User)
-
 	replyToUser(ev, topEntityKey, topEntity)
 }
 
+// Replies to user based on the type of message received
 func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEntity) {
 	switch entityKey {
 	case "greetings":
@@ -89,6 +90,3 @@ func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEnt
 
 	sendMessage("I don't understand -\\_(0_0)_/-", ev.Channel)
 }
-
-// determine if ev.User is slackbot id || user id is msg sender's id
-// remove slack id from string. create string "<id> " to search by

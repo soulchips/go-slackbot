@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // User - struct defining user attributes
@@ -20,12 +21,12 @@ type User struct {
 }
 
 // Creates a new User with default values
-func newUser() *User {
+func newUser() User {
 	user := new(User)
 	user.LastUpdate = time.Now().UTC()
 	user.CreatedAt = time.Now().UTC()
 
-	return user
+	return *user
 }
 
 // creates a new instance of a user's status record
@@ -65,11 +66,15 @@ func (user User) update(database string, collection string) (*mongo.UpdateResult
 			primitive.E{Key: "last_update", Value: time.Now().UTC()},
 		}},
 	}
+	updateOption := new(options.UpdateOptions)
+	upsertValue := true
+	updateOption.Upsert = &upsertValue
+	// bson.D{primitive.E{Key: "upsert", Value: true }}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	updateResult, err := collectionResult.UpdateOne(ctx, filter, update)
+	updateResult, err := collectionResult.UpdateOne(ctx, filter, update, updateOption)
 
 	return updateResult, err
 }
