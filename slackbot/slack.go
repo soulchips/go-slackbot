@@ -14,41 +14,49 @@ func sendMessage(msg string, channelID string) {
 	slackClient.PostMessage(channelID, slack.MsgOptionText(msg, false), slack.MsgOptionAsUser(true))
 }
 
-
 // Get user's info from slack
-func getSlackUserInfo(userID string) (slack.User, error) {
+func getSlackUserInfo(userID string) (*slack.User, error) {
 	user, err := slackClient.GetUserInfo(userID)
+
 	if err != nil {
-		log.Printf("%s\n", err)
-		return *user, err
+		if err.Error() != "user_not_found" {
+			log.Printf("Error getting slack user data: %s\n", err)
+		}
+		
+		return &slack.User{}, err
 	}
 
-	return *user, err
+	return user, err
 }
 
-
 // Saves user checking data, creates a new user if user isnt found
-func userCheckIn(userID string, username string, status string, database string, collection string) bool {
+func userCheckIn(userID string, status string, database string, collection string) error {
 	// get userinfo from db
 	user, err := getUserInfo(userID, database, collection)
 
 	// if no info, create new user
-	if(err != nil || user.UserID == "") {
+	if err != nil || user.UserID == "" {
+		slackUser, err := getSlackUserInfo(userID)
+		errString := err.Error()
+
+		if err != nil && errString != "user_not_found" {
+			return err
+		}
+
 		user = newUser()
 		user.UserID = userID
-		user.Name = username
+		user.Name = slackUser.Profile.RealName
 	}
 
 	user.LastStatus = status
 
 	updateResult, err := user.update(database, collection)
 
-	if(err != nil || updateResult.UpsertedID == nil) {
-		return false
+	if err != nil || updateResult.UpsertedID == nil {
+		return err
 	}
-	return true
+	return nil
 }
-
 
 // Checks for message events directed to the slackbot
 func handleMessage(ev *slack.MessageEvent) {
@@ -90,14 +98,9 @@ func handleMessage(ev *slack.MessageEvent) {
 	replyToUser(ev, topEntityKey, topEntity)
 }
 
-
 // Replies to user based on the type of message received
 func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEntity) {
 	log.Printf("username: %v", ev.User)
-
-	user := newUser()
-	user.UserID = ev.User
-	// user.Name = ev
 
 	switch entityKey {
 	case "greetings":
@@ -109,7 +112,7 @@ func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEnt
 		return
 
 	case "work_working_from_home":
-		// userCheckIn(ev.User, ev.Username, "IO", slackDatabase, statusCollection)
+		// userCheckIn(ev.User, "IO", slackDatabase, statusCollection)
 		sendMessage("I've upated your status to working remotely. Hope you have a good day!", ev.Channel)
 		return
 
