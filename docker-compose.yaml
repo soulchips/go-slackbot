@@ -11,6 +11,11 @@ services:
       SLACK_ACCESS_KEY: ${SLACK_ACCESS_KEY:?err}
       WIT_AI_ACCESS_KEY: ${WIT_AI_ACCESS_KEY:?err}
       WOLFRAM_APP_ID: ${WOLFRAM_APP_ID:?err}
+      DEPLOYMENT: ${DEPLOYMENT:?err}
+      MONGO_HOST: ${MONGO_HOST:?err}
+      MONGO_PORT: ${MONGO_PORT:?err}
+      MONGO_DATABASE: ${MONGO_DATABASE:?err}
+      MONGO_COLLECTION: ${MONGO_COLLECTION:?err}
     depends_on:
       - 'mongo'
   mongo:
