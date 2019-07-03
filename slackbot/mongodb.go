@@ -54,6 +54,27 @@ func getUserInfo(userID string, database string, collection string) (User, error
 	return result, err
 }
 
+// Returns a user's current status
+func getUserStatus(userID string, database string, collection string) (string, error) {
+	user, err := getUserInfo(userID, database, collection)
+	status := ""
+
+	if err == nil {
+		switch user.LastStatus {
+		case "OOO":
+			status = "out of office"
+		case "WFH":
+			status = "working from home"
+		case "IO":
+			status = "in office"
+		case "SICK":
+			status = "sick"
+		}
+	}
+
+	return status, err
+}
+
 // Updates the user's info
 func (user User) update(database string, collection string) (*mongo.UpdateResult, error) {
 	collectionResult := client.Database(database).Collection(collection)

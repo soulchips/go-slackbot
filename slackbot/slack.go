@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"regexp"
 	"strings"
 
 	"github.com/Krognol/go-wolfram"
@@ -22,11 +23,19 @@ func getSlackUserInfo(userID string) (*slack.User, error) {
 		if err.Error() != "user_not_found" {
 			log.Printf("Error getting slack user data: %s\n", err)
 		}
-		
+
 		return &slack.User{}, err
 	}
 
 	return user, err
+}
+
+// gets userID from string
+func extractUserID(str string) string {
+	re := regexp.MustCompile("\\<\\@(.*?)\\>")
+	match := re.FindStringSubmatch(str)
+
+	return match[1]
 }
 
 // Saves user checking data, creates a new user if user isnt found
@@ -37,10 +46,12 @@ func userCheckIn(userID string, status string, database string, collection strin
 	// if no info, create new user
 	if err != nil || user.UserID == "" {
 		slackUser, err := getSlackUserInfo(userID)
-		errString := err.Error()
 
-		if err != nil && errString != "user_not_found" {
-			return err
+		if err != nil {
+			errString := err.Error()
+			if errString != "user_not_found" {
+				return err
+			}
 		}
 
 		user = newUser()
@@ -101,6 +112,8 @@ func handleMessage(ev *slack.MessageEvent) {
 // Replies to user based on the type of message received
 func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEntity) {
 	log.Printf("username: %v", ev.User)
+	log.Printf("db: %v", slackDatabase)
+	log.Printf("collection: %v", statusCollection)
 
 	switch entityKey {
 	case "greetings":
@@ -112,20 +125,38 @@ func replyToUser(ev *slack.MessageEvent, entityKey string, entity wit.MessageEnt
 		return
 
 	case "work_working_from_home":
-		// userCheckIn(ev.User, "IO", slackDatabase, statusCollection)
+		userCheckIn(ev.User, "WFH", slackDatabase, statusCollection)
 		sendMessage("I've upated your status to working remotely. Hope you have a good day!", ev.Channel)
 		return
 
 	case "work_out_of_office":
+		userCheckIn(ev.User, "OOO", slackDatabase, statusCollection)
 		sendMessage("I've upated your status to out of office. Hope you have a good day!", ev.Channel)
 		return
 
 	case "work_in_office":
+		userCheckIn(ev.User, "IO", slackDatabase, statusCollection)
 		sendMessage("I'm glad you're here! I've updated your status to in office.", ev.Channel)
 		return
 
 	case "work_sick":
+		userCheckIn(ev.User, "SICK", slackDatabase, statusCollection)
 		sendMessage("I'm sorry to hear that. I hope you feel better soon. I've updated your status to sick today.", ev.Channel)
+		return
+
+	case "work_check_status":
+		// get id from msg string
+		userID := extractUserID(entity.Value.(string))
+
+		// get user status
+		userStatus, err := getUserStatus(userID, slackDatabase, statusCollection)
+
+		if err != nil {
+			sendMessage("I'm sorry. I can't retrieve a status for @" + userID , ev.Channel)
+			return
+		}
+
+		sendMessage("@" + userID + "is " + userStatus + " today.", ev.Channel)
 		return
 
 	case "wolfram_search_query":
