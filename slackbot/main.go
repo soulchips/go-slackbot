@@ -21,9 +21,8 @@ var (
 	slackClient        = slack.New(os.Getenv("SLACK_ACCESS_KEY"))
 	witClient          = wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
 	wolframClient      = &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
-	clientOptions      = options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort)
 	ctx, _             = context.WithTimeout(context.Background(), 10*time.Second)
-	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+mongoHost+":"+mongoPort))
 	slackBotIDString   string
 	slackDatabase      = os.Getenv("MONGO_DATABASE")
 	statusCollection   = "statuses"
@@ -49,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	fmt.Println("Connected to MongoDB at: ", mongoHost)
 
 	// Creates a connection to slack using the bot's access_key
 	rtm := slackClient.NewRTM()

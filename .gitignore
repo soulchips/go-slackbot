@@ -1,6 +1,7 @@
 # Files
 .DS_Store
 .env
+keys
 
 # Generated Files and Folders
 /slackbot/tmp
