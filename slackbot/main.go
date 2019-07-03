@@ -10,32 +10,31 @@ import (
 
 	"github.com/Krognol/go-wolfram"
 	"github.com/christianrondeau/go-wit"
-	"github.com/joho/godotenv"
 	"github.com/nlopes/slack"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	mongoHost						= os.Getenv("MONGO_HOST")
-	mongoPort						= os.Getenv("MONGO_PORT")
-	slackClient        	= slack.New(os.Getenv("SLACK_ACCESS_KEY"))
-	witClient          	= wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
-	wolframClient      	= &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
-	clientOptions      	= options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort)
-	ctx, _             	= context.WithTimeout(context.Background(), 10*time.Second)
-	client, mongoError 	= mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	slackBotIDString		string
-	slackDatabase				= os.Getenv("MONGO_DATABASE")
-	statusCollection		= "statuses"
+	mongoHost          = os.Getenv("MONGO_HOST")
+	mongoPort          = os.Getenv("MONGO_PORT")
+	slackClient        = slack.New(os.Getenv("SLACK_ACCESS_KEY"))
+	witClient          = wit.NewClient(os.Getenv("WIT_AI_ACCESS_KEY"))
+	wolframClient      = &wolfram.Client{AppID: os.Getenv("WOLFRAM_APP_ID")}
+	clientOptions      = options.Client().ApplyURI("mongodb://" + mongoHost + ":" + mongoPort)
+	ctx, _             = context.WithTimeout(context.Background(), 10*time.Second)
+	client, mongoError = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	slackBotIDString   string
+	slackDatabase      = os.Getenv("MONGO_DATABASE")
+	statusCollection   = "statuses"
 )
 
 func main() {
 	// Loads environment variables from .env if present
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	fmt.Println("Error loading .env file")
+	// }
 
 	fmt.Println("starting connections...")
 
@@ -45,7 +44,7 @@ func main() {
 	}
 
 	// Check MongoDB connection
-	err = client.Ping(context.Background(), nil)
+	err := client.Ping(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
