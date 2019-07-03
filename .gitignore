@@ -2,5 +2,6 @@
 .DS_Store
 .env
 
-# Generated Folders
+# Generated Files and Folders
 /slackbot/tmp
+/slackbot/slackbot
