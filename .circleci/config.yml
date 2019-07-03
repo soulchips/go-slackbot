@@ -17,3 +17,4 @@ jobs:
       - run: go get go.mongodb.org/mongo-driver/mongo/options
       - run: ls
       - run: go test -v ./...
+      - run: cd slackbot && go build
