@@ -29,11 +29,6 @@ var (
 )
 
 func main() {
-	// Loads environment variables from .env if present
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	fmt.Println("Error loading .env file")
-	// }
 
 	fmt.Println("starting connections...")
 
