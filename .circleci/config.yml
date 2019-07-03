@@ -19,4 +19,4 @@ jobs:
       - run: go test -v ./...
       - run: cd slackbot && go build
       - store_artifacts:
-          path: slackbot
+          path: slackbot/slackbot
