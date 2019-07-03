@@ -7,5 +7,12 @@ jobs:
     steps:
       
       - checkout
-      - run: go get -v -t -d ./...
+      - run: go get github.com/pilu/fresh
+      - run: go get github.com/Krognol/go-wolfram
+      - run: go get github.com/christianrondeau/go-wit
+      - run: go get github.com/joho/godotenv
+      - run: go get github.com/nlopes/slack
+      - run: go get go.mongodb.org/mongo-driver/mongo
+      - run: go get go.mongodb.org/mongo-driver/mongo/options
+      - run: ls
       - run: go test -v ./...
