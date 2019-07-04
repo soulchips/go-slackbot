@@ -20,5 +20,5 @@ jobs:
       - run: cd slackbot && go env GOOS=linux GOARCH=amd64 go build
       - store_artifacts:
           path: slackbot/slackbot
-      - store_artifacts:
-          path: builds/Dockerfile.slackbot
+      # - store_artifacts:
+      #     path: builds/Dockerfile.slackbot
