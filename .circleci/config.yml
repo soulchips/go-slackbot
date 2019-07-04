@@ -20,5 +20,6 @@ jobs:
       - run: cd slackbot && go build
       - store_artifacts:
           path: slackbot/slackbot
+          destination: builds/slackbot
       - store_artifacts:
           path: builds/Dockerfile.slackbot
