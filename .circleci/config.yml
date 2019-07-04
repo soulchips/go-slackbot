@@ -17,7 +17,7 @@ jobs:
       - run: go get go.mongodb.org/mongo-driver/mongo/options
       - run: ls
       - run: go test -v ./...
-      - run: cd slackbot && go env GOOS=linux GOARCH=amd64 go build -o ../builds .
+      - run: cd slackbot && go env GOOS=linux GOARCH=amd64 go build -o ../builds
       - store_artifacts:
           path: builds/slackbot
       - store_artifacts:
