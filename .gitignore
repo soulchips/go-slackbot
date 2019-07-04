@@ -6,3 +6,4 @@ keys
 # Generated Files and Folders
 /slackbot/tmp
 /slackbot/slackbot
+/builds/slackbot
