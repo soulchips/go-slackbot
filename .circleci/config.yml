@@ -22,4 +22,5 @@ jobs:
           path: slackbot/slackbot
           destination: builds/slackbot
       - store_artifacts:
-          path: builds/Dockerfile.slackbot
+          path: slackbot/builds/Dockerfile.slackbot
+          destination: builds/Dockerfile.slackbot
