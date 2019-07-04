@@ -1,0 +1,4 @@
+- create mongo local mongo instance with docker
+- change mongo host to local host
+- create docker image of slackbot using alpine linux as base
+- test connection
