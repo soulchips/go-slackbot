@@ -5,14 +5,12 @@ jobs:
       - image: circleci/golang:1.9
     steps:
       - checkout
-      - run: echo "bubble bubble bubble bubble" > my_test
       - run: echo "completed test 1"
   test2:
     docker:
       - image: circleci/golang:1.9
     steps:
       - checkout
-      - run: cat my_test
       - run: echo "completed test 2"
   build:
     docker:
