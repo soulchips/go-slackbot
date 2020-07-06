@@ -41,7 +41,7 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test3
+      - test1
       - test2:
           requires:
             - test1
