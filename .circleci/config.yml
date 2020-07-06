@@ -5,7 +5,7 @@ jobs:
       - image: circleci/golang:1.9
     steps:
       - checkout
-      - run: echo "completed test 1"
+      - run: echo "completed test 1, check check"
   test2:
     docker:
       - image: circleci/golang:1.9
