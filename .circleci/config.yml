@@ -12,7 +12,8 @@ jobs:
     steps:
       - checkout
       - run: echo "completed test 2"
-      - run: if [ "$FAIL" = "true" ]; then exit 1; fi
+      - run: echo "bla bla"
+      # - run: if [ "$FAIL" = "true" ]; then exit 1; fi
   build:
     docker:
       - image: circleci/golang:1.9
@@ -42,10 +43,10 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test1:
-          type: approval
-          requires:
-            - build
+      - test1
+          # type: approval
+          # requires:
+          #   - build
       - test2:
           requires:
             - test1
