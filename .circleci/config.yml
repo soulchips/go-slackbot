@@ -12,6 +12,7 @@ jobs:
     steps:
       - checkout
       - run: echo "completed test 2"
+      - run: echo $DEPLOYMENT
   build:
     docker:
       - image: circleci/golang:1.9
