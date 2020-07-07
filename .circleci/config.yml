@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - run: echo "completed test 2"
-      - run: echo $DEPLOYMENT
+      - run: if [ "$FAIL" = "true" ]; then exit 1; fi
   build:
     docker:
       - image: circleci/golang:1.9
