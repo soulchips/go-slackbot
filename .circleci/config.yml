@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - run: echo "completed test 2"
-      - run: echo "bla bla"
+      - run: echo "bla bla la la"
       # - run: if [ "$FAIL" = "true" ]; then exit 1; fi
   build:
     docker:
