@@ -1,8 +1,54 @@
 version: 2.1
-
-orbs:
-  hello: circleci/hello-build@0.0.5
+jobs:
+  test1:
+    docker:
+      - image: circleci/golang:1.9
+    steps:
+      - checkout
+      - run: echo "completed test 1, check check, a weh di blurtneeeet"
+  test2:
+    docker:
+      - image: circleci/golang:1.9
+    steps:
+      - checkout
+      - run: echo "completed test 2"
+      - run: if [ "$FAIL" = "true" ]; then exit 1; fi
+  build:
+    docker:
+      - image: circleci/golang:1.9
+      - image: circleci/mongo:4.0.9
+    working_directory: /go/src/github.com/soulchips/go-slackbot
+    steps:
+      
+      - checkout
+      - run: go get github.com/pilu/fresh
+      - run: go get github.com/Krognol/go-wolfram
+      - run: go get github.com/christianrondeau/go-wit
+      - run: go get github.com/joho/godotenv
+      - run: go get github.com/nlopes/slack
+      - run: go get go.mongodb.org/mongo-driver/mongo
+      - run: go get go.mongodb.org/mongo-driver/mongo/options
+      - run: ls
+      - run: go test -v ./...
+      - run: cd slackbot && go build
+      - store_artifacts:
+          path: slackbot/slackbot
+          destination: builds/slackbot
+      - store_artifacts:
+          path: slackbot/builds/Dockerfile.slackbot
+          destination: builds/Dockerfile.slackbot
 workflows:
-  "Hello Workflow":
+  version: 2
+  now:
     jobs:
-      - hello/hello-build
+      - test1
+  scheduled_db_backup:
+    triggers:
+      - schedule:
+          cron: "5,10,15,20,25,30,35,40,45,50,55,0 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - test1
