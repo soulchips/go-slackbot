@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 jobs:
   test1:
     docker:
@@ -52,4 +52,3 @@ workflows:
                 - master
     jobs:
       - test1
-      
